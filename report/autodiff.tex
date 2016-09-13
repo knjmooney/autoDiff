@@ -1,0 +1,105 @@
+\documentclass[11pt]{article}
+\usepackage{tikz}
+\usepackage[height=220mm, width=170mm]{geometry}
+%% \usetikzlibrary{calc}
+
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{multicol}
+
+\usepackage{amsmath}
+%% \usepackage{algorithm}
+%% \usepackage[noend]{algpseudocode}
+
+\setlength{\headheight}{15pt}
+
+\pagestyle{fancy}
+\lhead{Assignment 2}
+\rhead{Kevin Mooney -- 11372946}
+\fancyfoot{}
+
+\linespread{1.2}
+
+
+\begin{document}
+
+\vspace*{2mm}
+\noindent
+{\centering\textbf{\Large Automatic Differentiation}\\}
+\vspace*{5mm}
+
+\subsection*{Compiling \& Running - \texttt{make}}
+I used automake as recommended, so to compile and run it should hopefully be as simple as
+\begin{itemize}
+\item[\$] ./configure
+\item[\$] make
+\item[\$] \texttt{./autodiff -t 10000000 < ./test/test1.in}  
+\end{itemize}  
+All source can be found in ./src and some test input files can be found in ./test. The following section describes the interface
+
+\subsection*{Interface}
+
+The interface goes as follow, when you run autodiff without a file you will be prompted with the following screen
+\begin{lstlisting}[frame=single]
+To start our function is f_0(x) = f_1(x)
+Pick f_1(x)
+
+The options are:
+0 - As is          1 - polynomial     2 - trigonometric
+3 - hyperbolic     4 - exponential    5 - logarithmic 
+The composers are:
+6 - addition       7 - product     
+8 - quotient       9 - power 
+\end{lstlisting}
+
+To construct any function we work from the outside in, so as to construct test function 3, $h(x)$, we would take the following steps
+\begin{itemize}
+\item $h(x) = h_1(x)/h_2(x)$ \dots quotient
+\item $h_1(x) = exp(h_3(x))$ \dots exponential
+\item $h_3(x) = x^{2.5}$ \dots power \dots As is
+\item $h_2(x) = h_4(x) + h_5(x)$ \dots addition
+\item $h_4(x) = log(x)$ \dots logarithmic \dots As is
+\item $h_5(x) = \coth(x)$ \dots hyperbolic \dots coth \dots As is
+\end{itemize}
+The commands can be found in ./test/test3.in. The following are the test functions
+
+\subsection*{Test 1}           
+
+\begin{equation}
+  f(x) = \sin(x)
+\end{equation}
+
+\subsection*{Test 2}           
+\begin{equation}
+  g(x) = \tan(x^2 + 2x + 1)
+\end{equation}
+
+\subsection*{Test 3}           
+\begin{equation}
+  h(x) = \frac{\exp(x^{2.5})}{\log(x) + \coth(x)} 
+\end{equation}
+
+\subsection*{Test 4}           
+\begin{equation}
+  k(x) = \frac{5\tan(x^{2.5})}{x^3 + 25x + 9} 
+\end{equation}
+
+\subsection*{Speed Tests}
+
+When the test functions were implemented at run time vs directly implemented and run $10^7$ times, the following times were recorded. As you can see the direct implementations were always faster than the run time implementations.
+
+\begin{table}[h]
+  \centering 
+  \begin{tabular}{c|ccc}
+           & $t_\textrm{virtual}$  & $t_\textrm{direct}$ & $t_\textrm{direct}/t_\textrm{virtual}$  \\
+    \hline
+    $f(x)$ & 0.659322s & 0.592783s & 1.112248 \\
+    $g(x)$ & 1.27494s  & 0.622899s & 2.046784 \\
+    $h(x)$ & 9.66068s  & 7.41847s  & 1.302247 \\
+    $k(x)$ & 7.23954s  & 4.96945s  & 1.456809
+  \end{tabular}
+\end{table}
+
+\end{document}
